@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import {
   Image,
   KeyboardAvoidingView,
@@ -14,6 +15,14 @@ import {
 import { AccountTypeDropdown } from "../components/AccountTypeDropdown";
 import { BackArrow } from "../components/BackArrow";
 import {
+  FUNDI_SKILL_OPTIONS,
+  HARDWARE_TYPE_OPTIONS,
+  PROFESSIONAL_OPTIONS,
+} from "../../../../shared/constants/skill";
+import { CONTRACTOR_SPECIALIZATIONS } from "../../../../shared/constants/experience";
+import {
+  BUILDER_USER_TYPE_DESCRIPTIONS,
+  BUILDER_USER_TYPE_OPTIONS,
   CUSTOMER_ACCOUNT_TYPE_DESCRIPTIONS,
   CUSTOMER_ACCOUNT_TYPES,
   type CustomerAccountType,
@@ -27,6 +36,7 @@ export function CustomerSignupScreen() {
   const [userType, setUserType] = useState<SignupUserType | null>(null);
   const [customerAccountType, setCustomerAccountType] =
     useState<CustomerAccountType | null>(null);
+  const [selectedBuilderSkill, setSelectedBuilderSkill] = useState("");
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [verificationRequested, setVerificationRequested] = useState(false);
@@ -39,6 +49,26 @@ export function CustomerSignupScreen() {
     userType === "PROFESSIONAL" ||
     userType === "CONTRACTOR" ||
     userType === "HARDWARE";
+  const selectedBuilderType = isBuilderType ? userType : null;
+  const builderSkillOptions = useMemo(() => {
+    if (!selectedBuilderType) {
+      return [];
+    }
+
+    if (selectedBuilderType === "FUNDI") {
+      return FUNDI_SKILL_OPTIONS;
+    }
+
+    if (selectedBuilderType === "PROFESSIONAL") {
+      return PROFESSIONAL_OPTIONS;
+    }
+
+    if (selectedBuilderType === "CONTRACTOR") {
+      return Object.keys(CONTRACTOR_SPECIALIZATIONS);
+    }
+
+    return HARDWARE_TYPE_OPTIONS;
+  }, [selectedBuilderType]);
 
   const customerDescription = useMemo(() => {
     if (!customerAccountType) return "";
@@ -53,12 +83,49 @@ export function CustomerSignupScreen() {
   const showContactError = trimmedContact.length > 0 && !hasValidContact;
   const isUserTypeReady = !!userType;
   const isCustomerTypeReady = !isCustomer || !!customerAccountType;
-  const isAccountReady = isUserTypeReady && isCustomerTypeReady;
+  const isBuilderSkillReady = !isBuilderType || !!selectedBuilderSkill;
+  const isAccountReady = isUserTypeReady && isCustomerTypeReady && isBuilderSkillReady;
   const canGetCode = isAccountReady && hasValidContact;
   const normalizedCode = verificationCode.replace(/\D/g, "");
   const isValidCode = /^\d{6}$/.test(normalizedCode);
   const canSignUp =
     isAccountReady && hasValidContact && verificationRequested && otpVerified;
+  const builderFlowUserTypeMap: Record<Exclude<SignupUserType, "CUSTOMER">, string> = {
+    FUNDI: "Fundi",
+    PROFESSIONAL: "Professional",
+    CONTRACTOR: "Contractor",
+    HARDWARE: "Hardware",
+  };
+
+  const resetVerification = () => {
+    setVerificationRequested(false);
+    setOtpVerified(false);
+    setVerificationCode("");
+    setShowVerifiedPopup(false);
+  };
+
+  const handleSignUp = () => {
+    if (!canSignUp || !userType) {
+      return;
+    }
+
+    if (userType === "CUSTOMER") {
+      router.replace("/");
+      return;
+    }
+
+    const mappedUserType = builderFlowUserTypeMap[userType];
+    const mappedSkill = selectedBuilderSkill;
+
+    router.replace({
+      pathname: "/",
+      params: {
+        completeProfile: "1",
+        userType: mappedUserType,
+        skill: mappedSkill,
+      },
+    });
+  };
 
   useEffect(() => {
     if (!showVerifiedPopup) return;
@@ -150,10 +217,8 @@ export function CustomerSignupScreen() {
                   if (nextUserType !== "CUSTOMER") {
                     setCustomerAccountType(null);
                   }
-                  setVerificationRequested(false);
-                  setOtpVerified(false);
-                  setVerificationCode("");
-                  setShowVerifiedPopup(false);
+                  setSelectedBuilderSkill("");
+                  resetVerification();
                 }}
                 options={SIGNUP_USER_TYPE_OPTIONS}
                 placeholder="Select account type"
@@ -199,11 +264,62 @@ export function CustomerSignupScreen() {
                   ) : null}
                 </View>
               ) : isBuilderType ? (
-                <View className="mt-5 rounded-xl bg-[#eceef2] px-4 py-3">
-                  <Text className="text-center text-[14px] leading-6 text-[#334155]">
-                    Continue as {userType?.toLowerCase()} and request a 6-digit code to
-                    complete signup.
+                <View className="mt-5">
+                  <Text className="mb-2 text-[15px] font-bold text-[#1f2937]">
+                    Service Provider Type
                   </Text>
+
+                  <View className="flex-row flex-wrap gap-2">
+                    {BUILDER_USER_TYPE_OPTIONS.map((option) => {
+                      const isSelected = userType === option.value;
+                      return (
+                        <Pressable
+                          className={`h-10 min-w-[120px] items-center justify-center rounded-xl px-3 ${
+                            isSelected ? "bg-[#0b0f9f]" : "bg-[#d2d6de]"
+                          }`}
+                          key={option.value}
+                          onPress={() => {
+                            setUserType(option.value);
+                            setSelectedBuilderSkill("");
+                            resetVerification();
+                          }}
+                        >
+                          <Text
+                            className={`text-[14px] font-medium ${
+                              isSelected ? "text-white" : "text-[#4b5563]"
+                            }`}
+                            style={{ fontFamily: isWeb ? webFontFamily : undefined }}
+                          >
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  <View className="mt-4 rounded-xl bg-[#eceef2] px-4 py-3">
+                    <Text className="text-center text-[14px] leading-6 text-[#334155]">
+                      {selectedBuilderType
+                        ? BUILDER_USER_TYPE_DESCRIPTIONS[selectedBuilderType]
+                        : ""}
+                    </Text>
+                  </View>
+
+                  <View className="mt-4">
+                    <AccountTypeDropdown
+                      label="Select Skill"
+                      onChange={(value) => {
+                        setSelectedBuilderSkill(value);
+                        resetVerification();
+                      }}
+                      options={builderSkillOptions.map((option) => ({
+                        label: option,
+                        value: option,
+                      }))}
+                      placeholder="Choose skill"
+                      value={selectedBuilderSkill || null}
+                    />
+                  </View>
                 </View>
               ) : null}
 
@@ -277,9 +393,7 @@ export function CustomerSignupScreen() {
                   canSignUp ? "bg-[#16a34a]" : "bg-[#bcc1ca]"
                 }`}
                 disabled={!canSignUp}
-                onPress={() => {
-                  // Next step: API signup call after verified OTP.
-                }}
+                onPress={handleSignUp}
               >
                 <Text className="text-[17px] font-bold text-white">Sign Up</Text>
               </Pressable>
