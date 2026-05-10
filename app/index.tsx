@@ -1,3 +1,7 @@
+import { CustomerSignupScreen } from "@modules/auth/profile";
+
+export default function HomeScreen() {
+  return <CustomerSignupScreen />;
 import React, { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

@@ -11,5 +11,6 @@
       "@services/*":["./src/services/*"],
       "@config/*":  ["./src/config/*"]
     }
-  }
+  },
+  "exclude": ["dist", "node_modules"]
 }
