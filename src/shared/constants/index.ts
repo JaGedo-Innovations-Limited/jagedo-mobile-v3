@@ -1,1 +1,1 @@
-// src/shared/constants
+export * from "./profileCompletion";
