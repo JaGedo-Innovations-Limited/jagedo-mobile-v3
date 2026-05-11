@@ -3,29 +3,18 @@ import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { FUNDI_SKILL_OPTIONS, ACCOUNT_TYPE_OPTIONS } from "../../../shared/constants/skill";
-import { OptionPickerModal } from "../../../shared/components";
+import { ACCOUNT_TYPE_OPTIONS } from "../../../shared/constants/skill";
 
 const RoleSelection = () => {
   const [selectedType, setSelectedType] = useState("");
-  const [selectedSkill, setSelectedSkill] = useState("");
-  const [skillPickerOpen, setSkillPickerOpen] = useState(false);
 
-  const handleContinue = () => {
-    if (!selectedType) {
-      return;
-    }
-
-    if (selectedType === "Fundi" && !selectedSkill) {
-      return;
-    }
-
+  const handleSelectType = (type: string) => {
+    setSelectedType(type);
     router.replace({
       pathname: "/",
       params: {
         completeProfile: "1",
-        userType: selectedType,
-        skill: selectedSkill,
+        userType: type,
       },
     });
   };
@@ -74,12 +63,7 @@ const RoleSelection = () => {
                           ? "border-violet-600 bg-violet-50"
                           : "border-slate-200 bg-white"
                       }`}
-                      onPress={() => {
-                        setSelectedType(option);
-                        if (option !== "Fundi") {
-                          setSelectedSkill("");
-                        }
-                      }}
+                      onPress={() => handleSelectType(option)}
                     >
                       <Text
                         className={`text-base font-semibold ${
@@ -93,51 +77,13 @@ const RoleSelection = () => {
                 })}
               </View>
 
-              {selectedType === "Fundi" ? (
-                <View className="mt-6">
-                  <Text className="mb-3 text-[15px] font-medium text-slate-800">
-                    Select your skill
-                  </Text>
-                  <Pressable
-                    className={`flex-row items-center justify-between rounded-2xl border px-4 py-4 ${
-                      selectedSkill ? "border-violet-600 bg-violet-50" : "border-slate-300 bg-white"
-                    }`}
-                    onPress={() => setSkillPickerOpen(true)}
-                  >
-                    <Text className={`${selectedSkill ? "text-slate-900" : "text-slate-400"} text-base`}>
-                      {selectedSkill || "Choose your skill"}
-                    </Text>
-                    <Feather name="chevron-down" size={22} color="#94A3B8" />
-                  </Pressable>
-                </View>
-              ) : null}
-
-              <Pressable
-                className={`mt-8 items-center justify-center rounded-2xl px-4 py-4 ${
-                  selectedType && (selectedType !== "Fundi" || selectedSkill)
-                    ? "bg-violet-600"
-                    : "bg-violet-300"
-                }`}
-                onPress={handleContinue}
-                disabled={!selectedType || (selectedType === "Fundi" && !selectedSkill)}
-              >
-                <Text className="text-base font-semibold text-white">Continue</Text>
-              </Pressable>
+              <Text className="mt-8 text-center text-sm leading-6 text-slate-500">
+                Selecting an account type takes you straight into the profile completion flow.
+              </Text>
             </View>
           </View>
         </ScrollView>
       </SafeAreaView>
-
-      <OptionPickerModal
-        visible={skillPickerOpen}
-        title="Select your skill"
-        options={FUNDI_SKILL_OPTIONS}
-        onClose={() => setSkillPickerOpen(false)}
-        onSelect={(value) => {
-          setSelectedSkill(value);
-          setSkillPickerOpen(false);
-        }}
-      />
     </>
   );
 };

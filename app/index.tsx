@@ -26,7 +26,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const userTypeParam = Array.isArray(params.userType) ? params.userType[0] : params.userType;
-    const skillParam = Array.isArray(params.skill) ? params.skill[0] : params.skill;
     const shouldOpen = Array.isArray(params.completeProfile)
       ? params.completeProfile[0] === "1"
       : params.completeProfile === "1";
@@ -35,14 +34,10 @@ export default function HomeScreen() {
       setSelectedUserType(userTypeParam);
     }
 
-    if (skillParam) {
-      setSelectedSkill(skillParam);
-    }
-
     if (shouldOpen) {
       setProfileFlowOpen(true);
     }
-  }, [params.completeProfile, params.skill, params.userType]);
+  }, [params.completeProfile, params.userType]);
 
   useEffect(() => {
     const contactParam = Array.isArray(params.contact) ? params.contact[0] : params.contact;
@@ -140,7 +135,7 @@ export default function HomeScreen() {
               <Pressable
                 className="mt-3 self-start rounded-2xl bg-violet-600 px-5 py-3 active:opacity-90"
                 onPress={() => {
-                  if (!selectedUserType || (selectedUserType === "Fundi" && !selectedSkill)) {
+                  if (!selectedUserType) {
                     router.push("/role-selection");
                     return;
                   }
@@ -225,7 +220,10 @@ export default function HomeScreen() {
                         className="flex-row items-center gap-4 rounded-2xl px-3 py-3 active:bg-slate-50"
                         onPress={() => {
                           closeDrawer();
-                          router.push("/profile");
+                          router.push({
+                            pathname: "/profile",
+                            params: { userType: selectedUserType || "Fundi" },
+                          });
                         }}
                       >
                         <Feather color="#94A3B8" name="user" size={20} />
@@ -261,7 +259,6 @@ export default function HomeScreen() {
           initialEmail={initialEmail}
           initialPhone={initialPhone}
           onClose={() => setProfileFlowOpen(false)}
-          selectedSkill={selectedSkill}
           userType={selectedUserType}
           visible={profileFlowOpen}
         />
