@@ -9,12 +9,6 @@ import {
   serviceInterestOptions,
   socialPlatformOptions,
 } from "../constants/profileCompletion";
-import {
-  FUNDI_EXPERIENCE_OPTIONS,
-  FUNDI_GRADE_OPTIONS,
-  FUNDI_GRADE_PROJECT_COUNT,
-  FUNDI_SPECIALIZATIONS,
-} from "../constants/experience";
 import CompleteProfileStepIndicator from "./CompleteProfileStepIndicator";
 import OptionPickerModal from "./OptionPickerModal";
 import ProfileCompletionStepFive from "./ProfileCompletionStepFive";
@@ -22,21 +16,16 @@ import ProfileCompletionStepFour from "./ProfileCompletionStepFour";
 import ProfileCompletionStepOne from "./ProfileCompletionStepOne";
 import ProfileCompletionStepThree from "./ProfileCompletionStepThree";
 import ProfileCompletionStepTwo from "./ProfileCompletionStepTwo";
-import Experience from "../../modules/profileManagement/components/fundi/Experience";
 
 type CompleteProfileModalProps = {
   visible: boolean;
   onClose: () => void;
   userType?: string;
-  selectedSkill?: string;
 };
 
 type PickerType =
   | "county"
   | "subCounty"
-  | "specialization"
-  | "grade"
-  | "experience"
   | "referral"
   | "socialPlatform"
   | "service"
@@ -46,9 +35,7 @@ const CompleteProfileModal = ({
   visible,
   onClose,
   userType = "Fundi",
-  selectedSkill = "",
 }: CompleteProfileModalProps) => {
-  const isFundiFlow = userType === "Fundi";
   const totalSteps = 5;
   const [step, setStep] = useState(1);
   const [openPicker, setOpenPicker] = useState<PickerType>(null);
@@ -66,14 +53,6 @@ const CompleteProfileModal = ({
   const [idFront, setIdFront] = useState("");
   const [idBack, setIdBack] = useState("");
   const [kraPin, setKraPin] = useState("");
-  const [specialization, setSpecialization] = useState("");
-  const [grade, setGrade] = useState("");
-  const [yearsOfExperience, setYearsOfExperience] = useState("");
-  const [projects, setProjects] = useState([
-    { name: "", fileName: "" },
-    { name: "", fileName: "" },
-    { name: "", fileName: "" },
-  ]);
 
   const [referralSource, setReferralSource] = useState("");
   const [socialPlatform, setSocialPlatform] = useState("");
@@ -91,17 +70,6 @@ const CompleteProfileModal = ({
       setErrors({});
     }
   }, [visible]);
-
-  useEffect(() => {
-    setSpecialization("");
-    setGrade("");
-    setYearsOfExperience("");
-    setProjects([
-      { name: "", fileName: "" },
-      { name: "", fileName: "" },
-      { name: "", fileName: "" },
-    ]);
-  }, [selectedSkill, userType]);
 
   const availableSubCounties = useMemo(() => {
     if (!county) {
@@ -129,38 +97,6 @@ const CompleteProfileModal = ({
           options: availableSubCounties,
           onSelect: (value: string) => {
             setSubCounty(value);
-            setOpenPicker(null);
-          },
-        };
-      case "specialization":
-        return {
-          title: "Select specialization",
-          options: FUNDI_SPECIALIZATIONS[selectedSkill as keyof typeof FUNDI_SPECIALIZATIONS] || [],
-          onSelect: (value: string) => {
-            setSpecialization(value);
-            setOpenPicker(null);
-          },
-        };
-      case "grade":
-        return {
-          title: "Select grade",
-          options: FUNDI_GRADE_OPTIONS,
-          onSelect: (value: string) => {
-            setGrade(value);
-            setProjects([
-              { name: "", fileName: "" },
-              { name: "", fileName: "" },
-              { name: "", fileName: "" },
-            ]);
-            setOpenPicker(null);
-          },
-        };
-      case "experience":
-        return {
-          title: "Select experience",
-          options: FUNDI_EXPERIENCE_OPTIONS,
-          onSelect: (value: string) => {
-            setYearsOfExperience(value);
             setOpenPicker(null);
           },
         };
@@ -197,7 +133,7 @@ const CompleteProfileModal = ({
       default:
         return null;
     }
-  }, [availableSubCounties, openPicker, selectedSkill]);
+  }, [availableSubCounties, openPicker]);
 
   const closeModal = () => {
     setOpenPicker(null);
@@ -226,25 +162,9 @@ const CompleteProfileModal = ({
     }
 
     if (step === 3) {
-      if (isFundiFlow) {
-        if (!specialization) nextErrors.specialization = "Select a specialization.";
-        if (!grade) nextErrors.grade = "Select a grade.";
-        if (!yearsOfExperience) nextErrors.experience = "Select experience.";
-
-        const requiredProjects = FUNDI_GRADE_PROJECT_COUNT[grade] ?? 0;
-        for (let index = 0; index < requiredProjects; index += 1) {
-          if (!projects[index].name.trim()) {
-            nextErrors[`projectName_${index}`] = "Project name is required.";
-          }
-          if (!projects[index].fileName.trim()) {
-            nextErrors[`projectFile_${index}`] = "Upload a project file.";
-          }
-        }
-      } else {
-        if (!idFront) nextErrors.idFront = "Upload ID front.";
-        if (!idBack) nextErrors.idBack = "Upload ID back.";
-        if (!kraPin) nextErrors.kraPin = "Upload KRA pin document.";
-      }
+      if (!idFront) nextErrors.idFront = "Upload ID front.";
+      if (!idBack) nextErrors.idBack = "Upload ID back.";
+      if (!kraPin) nextErrors.kraPin = "Upload KRA pin document.";
     }
 
     if (step === 4) {
@@ -279,10 +199,6 @@ const CompleteProfileModal = ({
         pathname: "/profile",
         params: {
           userType,
-          skill: selectedSkill,
-          specialization,
-          grade,
-          experience: yearsOfExperience,
         },
       });
       return;
@@ -335,38 +251,6 @@ const CompleteProfileModal = ({
     }
 
     if (step === 3) {
-      if (isFundiFlow) {
-        return (
-          <Experience
-            selectedSkill={selectedSkill}
-            specialization={specialization}
-            grade={grade}
-            experience={yearsOfExperience}
-            projects={projects}
-            errors={errors}
-            onOpenSpecialization={() => setOpenPicker("specialization")}
-            onOpenGrade={() => setOpenPicker("grade")}
-            onOpenExperience={() => setOpenPicker("experience")}
-            onProjectNameChange={(index, value) => {
-              setProjects((current) =>
-                current.map((project, projectIndex) =>
-                  projectIndex === index ? { ...project, name: value } : project,
-                ),
-              );
-            }}
-            onProjectFileUpload={(index) => {
-              setProjects((current) =>
-                current.map((project, projectIndex) =>
-                  projectIndex === index
-                    ? { ...project, fileName: `project-${index + 1}-upload.pdf` }
-                    : project,
-                ),
-              );
-            }}
-          />
-        );
-      }
-
       return (
         <View>
           <ProfileCompletionStepThree
@@ -414,7 +298,7 @@ const CompleteProfileModal = ({
   return (
     <>
       <Modal visible={visible} transparent animationType="fade" onRequestClose={closeModal}>
-        <View className="flex-1 justify-end bg-slate-950/40 px-3 pb-4">
+        <View className={`flex-1 justify-end bg-slate-950/40 px-3 pb-4`}>
           <View className="max-h-[92%] rounded-[28px] bg-white px-5 pb-5 pt-6">
             <View className="mb-3 flex-row items-center justify-between">
               <Text className="text-[24px] font-bold text-slate-950">Complete Your Profile</Text>

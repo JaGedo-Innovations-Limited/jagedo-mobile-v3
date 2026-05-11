@@ -1,6 +1,8 @@
 export { default as CompleteProfileModal } from "./CompleteProfileModal";
 export { default as CompleteProfileStepIndicator } from "./CompleteProfileStepIndicator";
+export { default as ExperienceSelectionPanel } from "./ExperienceSelectionPanel";
 export { default as OptionPickerModal } from "./OptionPickerModal";
+export { default as ProjectUploadsSection } from "./ProjectUploadsSection";
 export { default as ProfileCompletionStepFive } from "./ProfileCompletionStepFive";
 export { default as ProfileCompletionStepFour } from "./ProfileCompletionStepFour";
 export { default as ProfileCompletionStepOne } from "./ProfileCompletionStepOne";

@@ -10,20 +10,17 @@ export default function HomeScreen() {
   const params = useLocalSearchParams<{
     completeProfile?: string;
     userType?: string;
-    skill?: string;
   }>();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(true);
   const [profileFlowOpen, setProfileFlowOpen] = useState(false);
   const [selectedUserType, setSelectedUserType] = useState("");
-  const [selectedSkill, setSelectedSkill] = useState("");
 
   const closeDrawer = () => setDrawerOpen(false);
 
   useEffect(() => {
     const userTypeParam = Array.isArray(params.userType) ? params.userType[0] : params.userType;
-    const skillParam = Array.isArray(params.skill) ? params.skill[0] : params.skill;
     const shouldOpen = Array.isArray(params.completeProfile)
       ? params.completeProfile[0] === "1"
       : params.completeProfile === "1";
@@ -32,14 +29,10 @@ export default function HomeScreen() {
       setSelectedUserType(userTypeParam);
     }
 
-    if (skillParam) {
-      setSelectedSkill(skillParam);
-    }
-
     if (shouldOpen) {
       setProfileFlowOpen(true);
     }
-  }, [params.completeProfile, params.skill, params.userType]);
+  }, [params.completeProfile, params.userType]);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -100,7 +93,7 @@ export default function HomeScreen() {
               <Pressable
                 className="mt-3 self-start rounded-2xl bg-violet-600 px-5 py-3 active:opacity-90"
                 onPress={() => {
-                  if (!selectedUserType || (selectedUserType === "Fundi" && !selectedSkill)) {
+                  if (!selectedUserType) {
                     router.push("/role-selection");
                     return;
                   }
@@ -185,7 +178,10 @@ export default function HomeScreen() {
                         className="flex-row items-center gap-4 rounded-2xl px-3 py-3 active:bg-slate-50"
                         onPress={() => {
                           closeDrawer();
-                          router.push("/profile");
+                          router.push({
+                            pathname: "/profile",
+                            params: { userType: selectedUserType || "Fundi" },
+                          });
                         }}
                       >
                         <Feather color="#94A3B8" name="user" size={20} />
@@ -219,7 +215,6 @@ export default function HomeScreen() {
 
         <CompleteProfileModal
           onClose={() => setProfileFlowOpen(false)}
-          selectedSkill={selectedSkill}
           userType={selectedUserType}
           visible={profileFlowOpen}
         />

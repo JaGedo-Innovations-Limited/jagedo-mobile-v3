@@ -1,14 +1,20 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-// import {
-//   AccountInfo,
-//   Address,
-// } from "../../src/modules/profileManagement/components";
+import {
+  // AccountInfo,
+  // Address,
+  Experience,
+} from "../../src/modules/profileManagement/components";
 
 const ProfileScreen = () => {
+  const params = useLocalSearchParams<{ userType?: string }>();
+  const userTypeParam = Array.isArray(params.userType) ? params.userType[0] : params.userType;
+  const userType = userTypeParam || "Fundi";
+  const welcomeName = userType === "Hardware" ? "Hardware" : userType;
+
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <ScrollView
@@ -36,7 +42,7 @@ const ProfileScreen = () => {
           <Text className="text-sm font-medium uppercase tracking-[1.5px] text-sky-200">
             Profile Management
           </Text>
-          <Text className="mt-3 text-3xl font-bold text-white">Welcome, FUNDI!</Text>
+          <Text className="mt-3 text-3xl font-bold text-white">Welcome, {welcomeName}!</Text>
           <Text className="mt-2 text-sm leading-6 text-slate-300">
             Review your account details and service location from one clean mobile view.
           </Text>
@@ -65,6 +71,7 @@ const ProfileScreen = () => {
         <View className="gap-5">
           {/* <AccountInfo /> */}
           {/* <Address /> */}
+          <Experience userType={userType} />
         </View>
       </ScrollView>
     </SafeAreaView>

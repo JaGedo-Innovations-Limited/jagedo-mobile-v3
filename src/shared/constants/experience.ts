@@ -350,3 +350,52 @@ export const FUNDI_GRADE_PROJECT_COUNT: Record<string, number> = {
   "G3: Semi-skilled": 1,
   "G4: Unskilled": 0,
 };
+
+export const FUNDI_SKILL_OPTIONS = Object.keys(FUNDI_SPECIALIZATIONS);
+
+export const PROFESSIONAL_CATEGORY_OPTIONS = Object.keys(PROFESSIONAL_SPECIALIZATIONS);
+
+export const PROFESSIONAL_LEVEL_OPTIONS = [
+  "Senior",
+  "Professional",
+  "Graduate",
+  "Student",
+];
+
+export const PROFESSIONAL_YEARS_OPTIONS = [
+  "15+ years",
+  "10-15 years",
+  "5-10 years",
+  "3-5 years",
+  "1-3 years",
+  "Less than 1 year",
+];
+
+export const PROFESSIONAL_LEVEL_PROJECT_COUNT: Record<string, number> = {
+  Senior: 5,
+  Professional: 3,
+  Graduate: 1,
+  Student: 0,
+};
+
+export const CONTRACTOR_CATEGORY_OPTIONS = Object.keys(CONTRACTOR_SPECIALIZATIONS);
+
+export const CONTRACTOR_NCA_CLASS_OPTIONS = [
+  "NCA 1",
+  "NCA 2",
+  "NCA 3",
+  "NCA 4",
+  "NCA 5",
+  "NCA 6",
+  "NCA 7",
+  "NCA 8",
+];
+
+export const CONTRACTOR_YEARS_OPTIONS = [
+  "15+ years",
+  "10-15 years",
+  "5-10 years",
+  "3-5 years",
+  "1-3 years",
+  "Less than 1 year",
+];
