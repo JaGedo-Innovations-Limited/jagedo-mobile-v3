@@ -296,7 +296,7 @@ export const CONTRACTOR_SPECIALIZATIONS = {
     "Piping Works",
     "Mechanical Maintenance",
   ],
-  "Roads & Infrastructure": [
+  "Road and other Civil Works": [
     "Road Construction",
     "Bridge Construction",
     "Culvert Construction",
@@ -307,18 +307,6 @@ export const CONTRACTOR_SPECIALIZATIONS = {
     "Railway Construction",
     "Port & Marine Works",
     "Urban Infrastructure",
-  ],
-  "Landscaping & External Works": [
-    "Landscape Construction",
-    "Paving & Hardscaping",
-    "Fencing & Gates",
-    "Swimming Pool Construction",
-    "Sports Facilities",
-    "Playground Construction",
-    "Retaining Walls",
-    "Outdoor Lighting",
-    "Irrigation Installation",
-    "Environmental Landscaping",
   ],
 };
 

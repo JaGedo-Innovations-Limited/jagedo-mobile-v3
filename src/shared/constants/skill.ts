@@ -15,15 +15,24 @@ export const FUNDI_SKILL_OPTIONS = [
 ];
 
 export const PROFESSIONAL_OPTIONS = [
-  "Project Manager",
   "Architect",
-  "Water Engineer",
-  "Roads Engineer",
-  "Structural Engineer",
+  "Construction Manager",
   "Mechanical Engineer",
   "Electrical Engineer",
-  "Surveyor",
+  "Environment Officer",
+  "Geotechnical Engineer",
+  "Geologist",
+  "Hydrologist",
+  "Interior Designer",
+  "Land Surveyor",
+  "Landscape Architect",
+  "Project Manager",
   "Quantity Surveyor",
+  "Roads Engineer",
+  "Safety Officer",
+  "Structural Engineer",
+  "Topo Surveyor",
+  "Water Engineer",
 ];
 
 export const HARDWARE_TYPE_OPTIONS = [
@@ -38,6 +47,7 @@ export const HARDWARE_TYPE_OPTIONS = [
 ];
 
 export const ACCOUNT_TYPE_OPTIONS = [
+  "Customer",
   "Fundi",
   "Contractor",
   "Professional",

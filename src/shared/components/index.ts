@@ -8,3 +8,5 @@ export { default as ProfileCompletionStepFour } from "./ProfileCompletionStepFou
 export { default as ProfileCompletionStepOne } from "./ProfileCompletionStepOne";
 export { default as ProfileCompletionStepThree } from "./ProfileCompletionStepThree";
 export { default as ProfileCompletionStepTwo } from "./ProfileCompletionStepTwo";
+
+export { default as ProfileCompletion } from "./ProfileCompletion";
