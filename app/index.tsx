@@ -5,12 +5,14 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { CompleteProfileModal } from "../src/shared/components";
+import { getSignupData } from "../src/shared/utils/profileStorage";
 
 export default function HomeScreen() {
   const params = useLocalSearchParams<{
     completeProfile?: string;
     userType?: string;
     skill?: string;
+    contact?: string;
   }>();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -18,6 +20,7 @@ export default function HomeScreen() {
   const [profileFlowOpen, setProfileFlowOpen] = useState(false);
   const [selectedUserType, setSelectedUserType] = useState("");
   const [selectedSkill, setSelectedSkill] = useState("");
+  const [signupContact, setSignupContact] = useState("");
 
   const closeDrawer = () => setDrawerOpen(false);
 
@@ -40,6 +43,43 @@ export default function HomeScreen() {
       setProfileFlowOpen(true);
     }
   }, [params.completeProfile, params.skill, params.userType]);
+
+  useEffect(() => {
+    const contactParam = Array.isArray(params.contact) ? params.contact[0] : params.contact;
+    if (contactParam) {
+      setSignupContact(contactParam);
+    }
+  }, [params.contact]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const hydrateSignup = async () => {
+      const signupData = await getSignupData();
+      if (!mounted || !signupData) return;
+
+      if (!selectedUserType && signupData.userType) {
+        setSelectedUserType(signupData.userType);
+      }
+
+      if (!selectedSkill && signupData.skill) {
+        setSelectedSkill(signupData.skill);
+      }
+
+      if (!signupContact && signupData.contact) {
+        setSignupContact(signupData.contact);
+      }
+    };
+
+    void hydrateSignup();
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedSkill, selectedUserType, signupContact]);
+
+  const initialEmail = signupContact.includes("@") ? signupContact : "";
+  const initialPhone = signupContact.includes("@") ? "" : signupContact;
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -218,6 +258,8 @@ export default function HomeScreen() {
         ) : null}
 
         <CompleteProfileModal
+          initialEmail={initialEmail}
+          initialPhone={initialPhone}
           onClose={() => setProfileFlowOpen(false)}
           selectedSkill={selectedSkill}
           userType={selectedUserType}
